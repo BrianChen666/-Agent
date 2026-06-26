@@ -1,0 +1,203 @@
+version: "1.0"
+doc_type: reference_based_common_issues
+purpose: "按公开厂商资料归纳的洗衣机常见问题，用作更接近真实资料的 RAG 知识层。"
+scope_note:
+  - "本文件不绑定真实品牌型号，不声称 X100/X200/W80 是真实产品。"
+  - "每条知识保留公开资料中的共性处理方法，避免为 RAG 检索额外制造复杂字段。"
+issues:
+  - issue_id: "REF-DRAIN-01"
+    issue_name: "排水异常"
+    real_world_codes_seen:
+      - "LG: OE"
+      - "Samsung: 5E / 5C"
+      - "部分品牌: E2、E18、F18 等可能表示排水相关问题，需以对应说明书为准"
+    common_meaning: "机器在规定时间内无法把桶内水排出，或排水速度明显异常。"
+    common_causes:
+      - "排水管弯折、压扁、堵塞或安装位置不当"
+      - "排水泵过滤器、毛絮过滤器被毛絮、硬币、发卡等堵塞"
+      - "地漏或外部排水管路不畅"
+      - "排水泵或排水阀故障"
+    user_can_check:
+      - "检查排水管是否弯折、压住或插入过深"
+      - "按说明书清理用户可触达的过滤器，清理前断电并准备接水"
+      - "运行单脱水或排水程序观察是否恢复"
+    user_must_not_do:
+      - "不要拆排水泵"
+      - "不要打开底部电气区域"
+      - "不要用硬物深入机身内部疏通"
+    service_when:
+      - "清理过滤器和排水管后仍不排水"
+      - "排水泵有异常噪音、焦味或机底漏水"
+    references:
+      - "LG USA OE support"
+      - "Samsung UK 5E/5C support"
+      - "Whirlpool drain pump filter support"
+
+  - issue_id: "REF-INLET-01"
+    issue_name: "进水异常"
+    real_world_codes_seen:
+      - "LG: IE"
+      - "Samsung: 4E / 4C"
+      - "部分品牌: E1 可能表示进水相关问题，需以对应说明书为准"
+    common_meaning: "机器在规定时间内未达到需要水位，或检测到供水异常。"
+    common_causes:
+      - "水龙头未打开或停水"
+      - "进水管弯折、堵塞或滤网堵塞"
+      - "水压过低"
+      - "进水阀、水位传感器或控制系统异常"
+    user_can_check:
+      - "确认同一水源是否有水"
+      - "完全打开水龙头"
+      - "检查进水管是否弯折"
+      - "关闭水龙头后清理进水接口滤网表面泥沙"
+    user_must_not_do:
+      - "不要拆进水阀"
+      - "不要打开后盖检查强电线路"
+    service_when:
+      - "外部供水正常但仍反复报进水异常"
+      - "断电后仍持续进水"
+    references:
+      - "LG USA IE support"
+      - "Samsung UK 4E/4C support"
+
+  - issue_id: "REF-DOOR-01"
+    issue_name: "门锁或上盖锁异常"
+    real_world_codes_seen:
+      - "Samsung: dE / dC / dS / FL / LO 等门锁相关提示"
+      - "部分品牌: E3 可能表示门锁或上盖锁相关问题，需以说明书为准"
+    common_meaning: "机器没有检测到门或上盖处于关闭并锁定状态。"
+    common_causes:
+      - "门未关严"
+      - "衣物夹在门封圈或锁扣处"
+      - "锁扣外部有异物"
+      - "门锁或上盖锁组件损坏"
+    user_can_check:
+      - "重新打开并关好门或上盖"
+      - "检查门封圈和锁扣处是否夹住衣物"
+      - "等待程序停止后再尝试开门"
+    user_must_not_do:
+      - "不要短接门锁"
+      - "不要撬门或强拉门"
+      - "不要拆门锁线束"
+    service_when:
+      - "门已关严仍反复报错"
+      - "门锁无法释放或门锁区域发热、有异味"
+    references:
+      - "Samsung USA washing machine error codes"
+
+  - issue_id: "REF-UNBALANCE-01"
+    issue_name: "脱水偏载或不平衡"
+    real_world_codes_seen:
+      - "LG: UE / Ub / uE"
+      - "Samsung: Ub / UE / Ur / U6 等"
+      - "部分品牌: E10 可能表示偏载，需以说明书为准"
+    common_meaning: "脱水前或脱水中检测到衣物分布不均，机器无法安全高速脱水。"
+    common_causes:
+      - "单件大件吸水后集中在一侧"
+      - "衣物太少，机器无法建立平衡"
+      - "衣物缠绕成团"
+      - "机器未调平"
+      - "防水衣物或厚地垫不适合高速脱水"
+    user_can_check:
+      - "暂停后重新抖散衣物"
+      - "大小件混放，必要时加入少量小衣物平衡"
+      - "检查机器四脚是否贴地"
+      - "降低脱水转速"
+    user_must_not_do:
+      - "不要强行反复高速脱水"
+      - "不要单独高速脱水大面积防水物品"
+    service_when:
+      - "空桶脱水仍明显撞桶"
+      - "伴随金属摩擦声或机器位移"
+    references:
+      - "LG UE/Ub support"
+      - "Samsung USA unbalanced load support"
+
+  - issue_id: "REF-SUDS-01"
+    issue_name: "泡沫过多"
+    real_world_codes_seen:
+      - "Samsung: SUd / 5UD / Sd / 5d 等"
+      - "部分品牌: E9 可能表示泡沫过多，需以说明书为准"
+    common_meaning: "机器检测到泡沫过多，可能暂停、延长漂洗或提示用户减少洗涤剂。"
+    common_causes:
+      - "洗涤剂过量"
+      - "滚筒机使用了非低泡洗涤剂"
+      - "衣物或筒内残留清洁剂"
+    user_can_check:
+      - "暂停等待自然消泡"
+      - "运行单漂洗或筒清洁程序"
+      - "下次减少洗涤剂用量"
+    user_must_not_do:
+      - "不要加入酒精、溶剂或不明消泡剂"
+    service_when:
+      - "未加洗涤剂仍反复出现泡沫提示"
+      - "泡沫大量外溢并伴随排水异常"
+    references:
+      - "Samsung USA excessive suds support"
+
+  - issue_id: "REF-MAINT-01"
+    issue_name: "过滤器维护"
+    real_world_codes_seen:
+      - "通常不是独立故障码，但与排水慢、不脱水、噪音、异味相关"
+    common_meaning: "过滤器积累毛絮和小物件后，可能影响排水、脱水和洗涤效果。"
+    common_causes:
+      - "长期未清理过滤器"
+      - "衣物口袋有硬币、发卡、纸巾等"
+      - "经常洗毛巾、宠物用品或掉毛衣物"
+    user_can_check:
+      - "按说明书定期清理过滤器"
+      - "清理前断电并准备接水"
+      - "清理后确认过滤器复位并拧紧"
+    user_must_not_do:
+      - "不要打开泵体或底部电气区域"
+    service_when:
+      - "过滤器无法复位"
+      - "清理后仍漏水或仍不排水"
+    references:
+      - "Whirlpool drain pump filter support"
+      - "Samsung UK 5E/5C support"
+
+  - issue_id: "REF-WARRANTY-01"
+    issue_name: "保修、包修和退换货判断"
+    real_world_codes_seen:
+      - "不适用"
+    common_meaning: "售后政策判断通常取决于购买凭证、购买日期、故障性质、使用场景和是否人为拆修。"
+    common_causes:
+      - "用户无法提供购买凭证"
+      - "保内但故障可能由使用不当造成"
+      - "出租房、学校、洗衣房等非家庭高频场景"
+      - "用户自行拆修后故障扩大"
+    user_can_check:
+      - "准备发票、订单截图、保修卡或机身条码"
+      - "说明购买日期、使用场景和故障现象"
+      - "等待售后检测确认是否为性能故障或质量故障"
+    user_must_not_do:
+      - "不要自行拆机后再要求按原故障判断"
+    service_when:
+      - "涉及退换货、收费争议、凭证缺失或商用场景"
+    references:
+      - "LG China warranty"
+      - "Little Swan service policy"
+      - "Haier laundry warranty"
+
+  - issue_id: "REF-FEE-01"
+    issue_name: "有偿服务费用构成"
+    real_world_codes_seen:
+      - "不适用"
+    common_meaning: "包外维修费用通常由人工/维修费、上门费、零件费、必要运输或拉修费构成；具体金额以官方收费标准和服务单为准。"
+    common_causes:
+      - "超出包修期"
+      - "非质量故障"
+      - "人为损坏或非授权拆修"
+      - "二次安装、移机、辅材或特殊环境施工"
+    user_can_check:
+      - "预约前确认是否保内"
+      - "询问本地服务网点收费标准"
+      - "维修前确认服务单和收费项目"
+    user_must_not_do:
+      - "不要要求客服在未检测前承诺最终金额"
+    service_when:
+      - "需要确认具体价格、偏远上门、拉修或多配件维修"
+    references:
+      - "LG China service policy"
+      - "Little Swan service policy"

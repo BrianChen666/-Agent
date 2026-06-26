@@ -1,0 +1,408 @@
+version: "1.0"
+doc_type: troubleshooting_flow_tree
+product_family: "Aqualink 家用洗衣机虚构数据集"
+global_rules:
+  - "先确认安全边界，再给用户自检建议。"
+  - "任何涉及拆机、强电、主板、电机、门锁短接、排水泵拆卸的请求，直接转人工或报修。"
+  - "流程判断中若出现漏水、焦味、跳闸、冒烟、门锁无法释放超过 30 分钟，应优先升级。"
+flows:
+  - flow_id: "F_NO_SPIN"
+    user_issue: "不脱水"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "是否能正常排水？"
+      - "面板是否显示故障码？"
+      - "脱水时是否有明显撞桶或震动？"
+      - "衣物是否为单件大件、羽绒服、防水衣物或厚地垫？"
+    steps:
+      - step: 1
+        check: "确认是否能排水"
+        branches:
+          - condition: "能排水"
+            next: "继续检查衣物偏载、门锁和程序设置"
+          - condition: "不能排水或桶内有明显积水"
+            next: "转入 F_DRAIN 排水异常流程，并检索 E2"
+      - step: 2
+        check: "确认是否显示故障码"
+        branches:
+          - condition: "显示 E2"
+            next: "检索 E2 排水异常"
+          - condition: "显示 E3"
+            next: "检索 E3 门锁异常"
+          - condition: "显示 E10"
+            next: "检索 E10 脱水偏载"
+          - condition: "显示 E5 或 F4"
+            next: "提示减少负载并建议报修条件"
+          - condition: "无故障码"
+            next: "继续追问声音、震动、衣物种类和程序状态"
+      - step: 3
+        check: "判断是否可自助解决"
+        branches:
+          - condition: "衣物偏载或缠绕"
+            action: "建议暂停后重新抖散衣物，大小件混放，选择较低转速单脱水"
+          - condition: "防水衣物或厚地垫"
+            action: "提示不适合高速脱水，取出后自然沥干"
+          - condition: "门锁未闭合"
+            action: "重新关门或上盖，检查衣物是否夹住"
+          - condition: "多次重启无效"
+            action: "建议报修"
+    escalation:
+      - "空桶脱水仍撞桶"
+      - "伴随金属摩擦声、焦味、跳闸"
+      - "E5、F4、E10 反复出现"
+    retrieve: ["E2", "E3", "E5", "E10", "F4", "manuals"]
+
+  - flow_id: "F_DRAIN"
+    user_issue: "不排水 / 排水慢 / 显示 E2"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "桶内是否还有明显积水？"
+      - "排水管是否弯折、压扁或插入地漏过深？"
+      - "是否近期清理过排水过滤器或毛絮过滤器？"
+      - "排水时是否听到排水泵嗡鸣或异响？"
+    steps:
+      - step: 1
+        check: "检查外部排水条件"
+        branches:
+          - condition: "排水管弯折或压住"
+            action: "恢复排水管自然弧度，重新运行单脱水"
+          - condition: "地漏反冒或排水慢"
+            action: "建议先处理地漏堵塞，再试机"
+          - condition: "排水管高度超过要求"
+            action: "调整到说明书建议高度范围"
+      - step: 2
+        check: "检查过滤器"
+        branches:
+          - condition: "X100 或 X200"
+            action: "断电后清理排水泵过滤器，准备浅盘接水"
+          - condition: "W80"
+            action: "清理毛絮过滤器和排水管口"
+      - step: 3
+        check: "重新试机"
+        branches:
+          - condition: "排水恢复"
+            action: "提醒定期清理过滤器，避免硬币发卡进入筒内"
+          - condition: "仍不排水且有嗡鸣"
+            action: "可能排水泵或排水阀异常，建议报修"
+          - condition: "无排水声音"
+            action: "可能排水泵供电或主控异常，建议报修"
+    escalation:
+      - "清理过滤器后仍 E2"
+      - "排水泵异响、焦味或机底漏水"
+      - "用户要求拆排水泵时必须拒绝并转售后"
+    retrieve: ["E2", "F3", "LE", "safety_boundaries"]
+
+  - flow_id: "F_INLET"
+    user_issue: "不进水 / 进水慢 / 显示 E1"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "家中水龙头是否有水？"
+      - "水龙头是否完全打开？"
+      - "进水管是否弯折或被压住？"
+      - "是否低楼层或用水高峰水压不足？"
+    steps:
+      - step: 1
+        check: "确认外部供水"
+        branches:
+          - condition: "停水或水压很低"
+            action: "等待供水恢复后重新运行"
+          - condition: "水龙头未打开"
+            action: "完全打开水龙头"
+          - condition: "进水管弯折"
+            action: "恢复进水管并重新启动"
+      - step: 2
+        check: "检查滤网"
+        branches:
+          - condition: "进水长期变慢"
+            action: "关闭水龙头后清理进水管接口滤网表面泥沙"
+          - condition: "滤网清理后仍慢"
+            action: "建议售后检测进水阀和水位传感器"
+      - step: 3
+        check: "判断是否存在异常进水"
+        branches:
+          - condition: "断电后仍进水"
+            action: "关闭水龙头并报修，检索 F2"
+          - condition: "进水后马上排水"
+            action: "检查排水管是否放置过低或形成虹吸"
+    escalation:
+      - "供水正常仍 E1"
+      - "断电后仍进水"
+      - "出现 E4 溢水保护"
+    retrieve: ["E1", "F2", "E4"]
+
+  - flow_id: "F_DOOR_LOCK"
+    user_issue: "门打不开 / 门锁异常 / 上盖锁异常"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "当前是否处于运行、脱水或烘干冷却阶段？"
+      - "桶内是否还有水？"
+      - "是否显示 E3 或 E13？"
+      - "门封圈或上盖锁扣是否夹住衣物？"
+    steps:
+      - step: 1
+        check: "确认安全状态"
+        branches:
+          - condition: "桶内有水"
+            action: "先走 F_DRAIN 排水流程，不建议强行开门"
+          - condition: "X200 刚结束烘干"
+            action: "等待 10-30 分钟冷却，检索 E13"
+          - condition: "W80 内桶未停稳"
+            action: "等待内桶完全停稳后再开盖"
+      - step: 2
+        check: "检查门锁外部因素"
+        branches:
+          - condition: "衣物夹住门封圈"
+            action: "暂停后轻推门重新关严，再等待解锁"
+          - condition: "锁扣有异物"
+            action: "取出外部可见异物，不使用工具撬锁"
+      - step: 3
+        check: "判断升级"
+        branches:
+          - condition: "冷却或排水后仍打不开"
+            action: "建议报修"
+          - condition: "用户要求短接门锁"
+            action: "拒绝指导并说明安全风险"
+    escalation:
+      - "门锁超过 30 分钟未释放"
+      - "E3 或 E13 反复出现"
+      - "门锁区域发热、焦味或无法关严"
+    retrieve: ["E3", "E13", "safety_boundaries"]
+
+  - flow_id: "F_LEAK"
+    user_issue: "漏水 / 机底有水 / 显示 LE"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "漏水位置在进水管、排水管、门边、洗涤剂盒还是机底？"
+      - "是否同时跳闸或有焦味？"
+      - "是否洗涤剂泡沫很多？"
+      - "是否刚移动或安装过机器？"
+    steps:
+      - step: 1
+        check: "立即安全处置"
+        branches:
+          - condition: "地面有明显积水"
+            action: "停止程序，关闭水龙头，拔电，擦干地面"
+          - condition: "伴随跳闸或焦味"
+            action: "停止使用并直接报修"
+      - step: 2
+        check: "判断外部可见来源"
+        branches:
+          - condition: "进水管接口漏水"
+            action: "关闭水龙头后重新拧紧接口，确认垫圈完好"
+          - condition: "排水管脱落"
+            action: "复位排水管并确认固定"
+          - condition: "门边渗水"
+            action: "检查门封圈是否夹住衣物或毛絮"
+          - condition: "洗涤剂盒溢泡"
+            action: "减少洗涤剂并运行漂洗"
+      - step: 3
+        check: "判断是否内部漏水"
+        branches:
+          - condition: "机底持续出水或显示 LE"
+            action: "建议报修，不允许打开底部检查"
+    escalation:
+      - "机底持续漏水"
+      - "LE 提示"
+      - "漏水伴随电气异常"
+    retrieve: ["LE", "E4", "after_sales_policy", "safety_boundaries"]
+
+  - flow_id: "F_NOISE"
+    user_issue: "噪音大 / 震动大 / 撞桶"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "噪音发生在洗涤、排水还是脱水阶段？"
+      - "是否首次安装或刚移动机器？"
+      - "衣物是否单件大件或集中一侧？"
+      - "是否有硬币、发卡、金属扣等异物？"
+    steps:
+      - step: 1
+        check: "确认阶段"
+        branches:
+          - condition: "排水阶段嗡鸣"
+            action: "转入 F_DRAIN，可能过滤器或排水泵问题"
+          - condition: "脱水阶段撞桶"
+            action: "检查偏载、地面和底脚"
+          - condition: "洗涤阶段金属摩擦"
+            action: "停止使用并建议报修"
+      - step: 2
+        check: "外部和负载排查"
+        branches:
+          - condition: "地面不平"
+            action: "调平底脚，确认四脚贴地"
+          - condition: "衣物偏载"
+            action: "重新分布衣物，大小件混放"
+          - condition: "新机首次使用"
+            action: "确认运输螺栓是否已由安装人员拆除；用户不要自行拆后盖"
+      - step: 3
+        check: "判断是否故障"
+        branches:
+          - condition: "空桶脱水仍异常震动"
+            action: "建议报修"
+          - condition: "金属摩擦或尖锐声"
+            action: "停止使用并报修"
+    escalation:
+      - "空桶仍撞桶"
+      - "明显金属摩擦、焦味或跳闸"
+      - "用户要求拆机取异物"
+    retrieve: ["E10", "E5", "F4", "safety_boundaries"]
+
+  - flow_id: "F_WASH_RESULT"
+    user_issue: "洗不干净 / 泡沫多 / 有异味 / 有残留"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "使用了多少洗涤剂？是否为滚筒低泡洗涤剂？"
+      - "衣物是否超量？"
+      - "是否长期未运行筒自洁或桶自洁？"
+      - "洗后是否及时取出衣物并通风？"
+    steps:
+      - step: 1
+        check: "判断洗涤剂和负载"
+        branches:
+          - condition: "泡沫很多"
+            action: "减少洗涤剂，滚筒机使用低泡洗涤剂，必要时追加漂洗"
+          - condition: "衣物过量"
+            action: "减少负载，避免超过容量 80%"
+          - condition: "污渍较重"
+            action: "预处理污渍后选择强力或浸泡模式"
+      - step: 2
+        check: "维护状态"
+        branches:
+          - condition: "有异味"
+            action: "运行筒自洁或桶自洁，清洁门封圈或毛絮过滤器"
+          - condition: "衣物沾絮"
+            action: "W80 清理毛絮过滤器，深浅色和掉毛衣物分开洗"
+      - step: 3
+        check: "判断是否故障"
+        branches:
+          - condition: "未加洗涤剂仍 E9"
+            action: "建议报修"
+          - condition: "水位明显异常"
+            action: "检索 F1 或 E4"
+    escalation:
+      - "未加洗涤剂仍泡沫报警"
+      - "机器不进水或不排水导致洗不净"
+      - "桶自洁后仍有明显霉味并伴随漏水"
+    retrieve: ["E9", "F1", "manuals"]
+
+  - flow_id: "F_DRYING"
+    user_issue: "X200 烘不干 / 烘干时间长 / 烘干异味"
+    applies_to: ["X200"]
+    entry_questions:
+      - "烘干负载是否超过 7 kg？"
+      - "烘干前是否已经高速脱水？"
+      - "衣物是否厚重混合，如毛巾、卫衣、牛仔裤？"
+      - "是否显示 E11、E12 或 E13？"
+    steps:
+      - step: 1
+        check: "确认负载和程序"
+        branches:
+          - condition: "洗涤满载直接烘干"
+            action: "取出部分衣物，分批烘干"
+          - condition: "未充分脱水"
+            action: "先运行单脱水再烘干"
+          - condition: "厚薄混合"
+            action: "按厚薄分开烘干，厚衣物使用定时补烘"
+      - step: 2
+        check: "检查维护"
+        branches:
+          - condition: "筒口毛絮多"
+            action: "清理门封圈、玻璃门和筒口毛絮"
+          - condition: "近期未清洁风道"
+            action: "运行风道清洁"
+      - step: 3
+        check: "处理故障码"
+        branches:
+          - condition: "E11"
+            action: "停止烘干冷却，减少负载；反复出现报修"
+          - condition: "E12"
+            action: "清理毛絮和排水，运行风道清洁；仍出现报修"
+          - condition: "E13"
+            action: "等待冷却，不强行开门"
+    escalation:
+      - "少量衣物仍烘不干"
+      - "有焦味、异常摩擦声或无风声"
+      - "E11/E12/E13 反复出现"
+    retrieve: ["E11", "E12", "E13", "X200_manual"]
+
+  - flow_id: "F_NO_START"
+    user_issue: "无法启动 / 面板无反应 / 按键无效"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "插座是否通电？"
+      - "面板是否显示 CL、PF、E3 或 E8？"
+      - "门或上盖是否关严？"
+      - "是否正在预约、暂停或童锁状态？"
+    steps:
+      - step: 1
+        check: "电源和状态"
+        branches:
+          - condition: "插座无电"
+            action: "更换有电插座，不使用破损拖线板"
+          - condition: "显示 PF"
+            action: "重新选择程序，确认电源稳定"
+          - condition: "显示 CL"
+            action: "按型号解除童锁"
+      - step: 2
+        check: "门锁和程序"
+        branches:
+          - condition: "显示 E3"
+            action: "转入 F_DOOR_LOCK"
+          - condition: "处于预约"
+            action: "取消预约后启动"
+          - condition: "门未关严"
+            action: "重新关门或上盖"
+      - step: 3
+        check: "主控异常"
+        branches:
+          - condition: "显示 E8 或面板乱码"
+            action: "断电 5 分钟后重启；仍异常报修"
+          - condition: "插座正常但完全无显示"
+            action: "建议报修，不指导拆机检查"
+    escalation:
+      - "插座正常但整机无显示"
+      - "E8、面板乱码、自动重启"
+      - "插头或电源线发热"
+    retrieve: ["CL", "PF", "E3", "E8", "safety_boundaries"]
+
+  - flow_id: "F_INSTALL_POLICY"
+    user_issue: "安装、移机、保修、收费、退换货咨询"
+    applies_to: ["X100", "X200", "W80"]
+    entry_questions:
+      - "是否有发票、订单截图或购买凭证？"
+      - "购买日期和安装日期分别是什么？"
+      - "是否在保修期内？"
+      - "机器是否有人为拆修、进水、摔碰或商用使用？"
+      - "服务地址是否偏远或跨区域？"
+    steps:
+      - step: 1
+        check: "判断保修"
+        branches:
+          - condition: "整机购买 1 年内且非人为"
+            action: "可按保内质量故障处理"
+          - condition: "主要部件 3 年内且非人为"
+            action: "主要部件可按保内处理，普通易损件另判"
+          - condition: "无购买凭证"
+            action: "以出厂日期推算保修期"
+      - step: 2
+        check: "判断收费"
+        branches:
+          - condition: "保内质量故障"
+            action: "上门检测和维修不收取基础费用"
+          - condition: "保外或非保修"
+            action: "说明检测费、上门费、配件费和远程费可能产生"
+          - condition: "偏远地区"
+            action: "提示可能有额外上门交通费用"
+      - step: 3
+        check: "退换货"
+        branches:
+          - condition: "7 日内质量故障且检测确认"
+            action: "可申请退货或换货"
+          - condition: "15 日内质量故障且检测确认"
+            action: "可申请换货或维修"
+          - condition: "外观损坏或人为原因"
+            action: "不适用无责退换，按检测结果处理"
+    escalation:
+      - "用户要求确认具体收费金额"
+      - "凭证缺失且保修争议"
+      - "退换货争议或多次维修未解决"
+    retrieve: ["after_sales_policy"]
