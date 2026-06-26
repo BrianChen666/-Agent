@@ -1,0 +1,22 @@
+embedding:
+  provider: dashscope
+  model: text-embedding-v4
+  dim: 1024
+rerank:
+  provider: dashscope
+  model: qwen3-rerank
+chunk:
+  manual_max_chars: 800
+  manual_overlap: 80
+retrieval:
+  dense_k: 20
+  sparse_k: 20
+  rrf_k: 60
+  top_k: 5
+agentic:
+  max_retrieval_attempts: 2
+  reflection_required: true
+llm:
+  provider: deepseek
+  model: deepseek-v4-flash
+  temperature: 0.1

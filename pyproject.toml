@@ -1,0 +1,17 @@
+[project]
+name = "aqualink-appliance-agent"
+version = "0.1.0"
+description = "Agentic RAG customer service assistant for Aqualink appliance after-sales support"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pyyaml",
+  "pydantic",
+  "pydantic-settings",
+  "httpx",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
