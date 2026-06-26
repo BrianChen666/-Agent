@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pyyaml
+pydantic
+pydantic-settings
+httpx
+pytest
+
+# Optional production integrations from the design target can be added when
+# replacing the built-in lightweight retriever with LangGraph/Chroma/BM25:
+# langchain
+# langgraph
+# langchain-openai
+# chromadb
+# rank-bm25
+# jieba

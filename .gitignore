@@ -1,0 +1,15 @@
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
+# Local design drafts requested to stay out of GitHub
+docs/
+
+# Runtime and cache output
+data/
+chroma/
+evaluation/golden_set/
+.pytest_cache/
+__pycache__/
+*.py[cod]
